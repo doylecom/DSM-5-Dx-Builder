@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Psychiatric DSM‑5 Diagnosis Builder — Unified</title>
+<style>
+  :root { --gap: 12px; --pad: 14px; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Apple SD Gothic Neo, "Noto Sans KR", sans-serif; margin: 0; background: #0b0f14; color: #e6edf3; }
+  header { padding: 18px var(--pad); border-bottom: 1px solid #1f2937; background: #0e141b; position: sticky; top: 0; z-index: 20;}
+  h1 { font-size: 18px; margin: 0; }
+  p.sub { margin: 4px 0 0; color: #93a2b8; font-size: 12px; }
+  main { padding: 16px var(--pad) 96px; max-width: 1100px; margin: 0 auto; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
+  .tabbtn { padding: 8px 12px; border-radius: 999px; border: 1px solid #2a3e55; background: #0b1724; color: #cfe0ee; cursor: pointer; font-size: 13px; }
+  .tabbtn.active { background: #12304a; border-color: #3b5f7c; }
+  .wrap { display: none; }
+  .wrap.active { display: block; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: var(--gap); }
+  @media (min-width: 900px) { .grid { grid-template-columns: 1.25fr 1fr; } }
+  .card { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; }
+  label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; color: #cdd9e5; }
+  select, input[type="text"] { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #243244; background: #0b1220; color: #e6edf3; }
+  select:disabled { opacity: 0.6; }
+  .help { font-size: 12px; color: #93a2b8; }
+  .result-card { margin-top: 16px; padding: 14px; border-radius: 12px; background: #09111a; border: 1px dashed #274560; }
+  .result { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  button { padding: 10px 14px; border: 1px solid #264766; border-radius: 10px; background: #0b1724; color: #e6edf3; cursor: pointer; }
+  button:hover { background: #102336; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; border: 1px solid #2a3e55; color: #9fb6cc; }
+  .indent { margin-left: 28px; }
+  footer { position: fixed; bottom: 0; left: 0; right: 0; background: #0e141b; border-top: 1px solid #1f2937; padding: 10px var(--pad); font-size: 12px; color: #8aa2b5; display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .grow { flex: 1 1 auto; min-width: 200px; }
+  .kbd { border: 1px solid #3a4a5a; background: #0c1b2a; border-radius: 6px; padding: 1px 6px; font-size: 11px; color:#a9bfd2;}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Psychiatric DSM‑5 Diagnosis Builder — Unified</h1>
+    <p class="sub">MDD · Schizophrenia · GAD · Panic Disorder · Bipolar를 한 파일에서 선택해서 사용하세요.</p>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <button class="tabbtn active" data-tab="mdd">MDD</button>
+      <button class="tabbtn" data-tab="scz">Schizophrenia</button>
+      <button class="tabbtn" data-tab="gad">GAD</button>
+      <button class="tabbtn" data-tab="panic">Panic Disorder</button>
+      <button class="tabbtn" data-tab="bipolar">Bipolar</button>
+      <span class="grow"></span>
+      <button id="copyCurrent">Copy current</button>
+      <button id="resetCurrent">Reset current</button>
+    </div>
+
+    <!-- MDD (Pro) -->
+    <section id="wrap-mdd" class="wrap active">
+      <div class="grid">
+        <div class="card">
+          <label>Disorder</label>
+          <input id="mdd-disorder" type="text" value="Major Depressive Disorder" readonly />
+          <label style="margin-top:12px;">Episode</label>
+          <select id="mdd-episode">
+            <option value="">-- Select --</option>
+            <option value="single episode">single episode</option>
+            <option value="recurrent">recurrent</option>
+          </select>
+          <label style="margin-top:12px;">Severity</label>
+          <select id="mdd-severity">
+            <option value="">-- Select --</option>
+            <option value="mild">mild</option>
+            <option value="moderate">moderate</option>
+            <option value="severe without psychotic features">severe without psychotic features</option>
+            <option value="severe with psychotic features">severe with psychotic features</option>
+          </select>
+          <label style="margin-top:12px;">Specifier(s) <span class="pill">multi‑select</span></label>
+          <div>
+            <label><input type="checkbox" class="mdd-spec" value="with anxious distress" id="mdd-spec-anx"> with anxious distress</label>
+            <div class="indent" id="mdd-anx-wrap" style="display:none;">
+              <label class="help">anxious distress 강도</label>
+              <select id="mdd-anx-level">
+                <option value="">(unspecified)</option>
+                <option value="(mild)">mild</option>
+                <option value="(moderate)">moderate</option>
+                <option value="(moderate-severe)">moderate-severe</option>
+                <option value="(severe)">severe</option>
+              </select>
+            </div>
+            <label><input type="checkbox" class="mdd-spec" value="with mixed features"> with mixed features</label>
+            <label><input type="checkbox" class="mdd-spec" value="with melancholic features"> with melancholic features</label>
+            <label><input type="checkbox" class="mdd-spec" value="with atypical features"> with atypical features</label>
+            <label><input type="checkbox" class="mdd-spec" value="with catatonia"> with catatonia</label>
+            <label><input type="checkbox" class="mdd-spec" value="with peripartum onset"> with peripartum onset</label>
+            <label><input type="checkbox" class="mdd-spec" value="with seasonal pattern" id="mdd-spec-season"> with seasonal pattern <span class="help">*(recurrent만 허용)</span></label>
+          </div>
+          <label style="margin-top:12px;">Remission status</label>
+          <select id="mdd-remission">
+            <option value="">-- None --</option>
+            <option value="in partial remission">in partial remission</option>
+            <option value="in full remission">in full remission</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="result-card"><div class="help">Generated diagnosis</div><div id="mdd-result" class="result" style="margin-top:6px;">(선택값을 입력하세요)</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Schizophrenia -->
+    <section id="wrap-scz" class="wrap">
+      <div class="grid">
+        <div class="card">
+          <label>Disorder</label>
+          <input id="scz-dis" type="text" value="Schizophrenia" readonly />
+          <label style="margin-top:12px;">Course</label>
+          <select id="scz-course">
+            <option value="">-- Select --</option>
+            <option value="first episode">first episode</option>
+            <option value="multiple episodes">multiple episodes</option>
+            <option value="continuous">continuous</option>
+            <option value="unspecified">unspecified</option>
+          </select>
+          <label style="margin-top:12px;">Current status</label>
+          <select id="scz-status">
+            <option value="">-- Select --</option>
+            <option value="currently in acute episode">currently in acute episode</option>
+            <option value="currently in partial remission">currently in partial remission</option>
+            <option value="currently in full remission">currently in full remission</option>
+            <option value="current status unspecified">current status unspecified</option>
+          </select>
+          <label style="margin-top:12px;">Specifier</label>
+          <select id="scz-cat">
+            <option value="">-- None --</option>
+            <option value="with catatonia">with catatonia</option>
+          </select>
+          <label style="margin-top:12px;">Severity (0–4, 선택)</label>
+          <select id="scz-sev">
+            <option value="">-- Not specified --</option>
+            <option value="severity: 0">severity: 0</option>
+            <option value="severity: 1">severity: 1</option>
+            <option value="severity: 2">severity: 2</option>
+            <option value="severity: 3">severity: 3</option>
+            <option value="severity: 4">severity: 4</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="result-card"><div class="help">Generated diagnosis</div><div id="scz-result" class="result" style="margin-top:6px;">(선택값을 입력하세요)</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAD -->
+    <section id="wrap-gad" class="wrap">
+      <div class="grid">
+        <div class="card">
+          <label>Disorder</label>
+          <input id="gad-dis" type="text" value="Generalized Anxiety Disorder" readonly />
+          <label style="margin-top:12px;">Specifier</label>
+          <select id="gad-spec">
+            <option value="">-- None --</option>
+            <option value="with panic attacks">with panic attacks</option>
+          </select>
+          <label style="margin-top:12px;">Optional severity (임상 표기)</label>
+          <select id="gad-sev">
+            <option value="">-- Not specified --</option>
+            <option value="mild">mild</option>
+            <option value="moderate">moderate</option>
+            <option value="severe">severe</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="result-card"><div class="help">Generated diagnosis</div><div id="gad-result" class="result" style="margin-top:6px;">(선택값을 입력하세요)</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panic Disorder -->
+    <section id="wrap-panic" class="wrap">
+      <div class="grid">
+        <div class="card">
+          <label>Disorder</label>
+          <input id="panic-dis" type="text" value="Panic Disorder" readonly />
+          <label style="margin-top:12px;">Optional note (free text)</label>
+          <input id="panic-note" type="text" placeholder="예: nocturnal panic attacks (임상 메모)" />
+          <div class="help">* Panic Disorder 자체에는 “with panic attacks” 중복 표기하지 않습니다.</div>
+        </div>
+        <div class="card">
+          <div class="result-card"><div class="help">Generated diagnosis</div><div id="panic-result" class="result" style="margin-top:6px;">(선택값을 입력하세요)</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bipolar -->
+    <section id="wrap-bipolar" class="wrap">
+      <div class="grid">
+        <div class="card">
+          <label>Type</label>
+          <select id="bp-type">
+            <option value="">-- Select --</option>
+            <option value="Bipolar I Disorder">Bipolar I Disorder</option>
+            <option value="Bipolar II Disorder">Bipolar II Disorder</option>
+          </select>
+          <label style="margin-top:12px;">Current/Most recent episode</label>
+          <select id="bp-epi">
+            <option value="">-- Select --</option>
+            <option value="manic">manic</option>
+            <option value="hypomanic">hypomanic</option>
+            <option value="depressive">depressive</option>
+            <option value="unspecified">unspecified</option>
+          </select>
+          <label style="margin-top:12px;">Severity (episode‑specific)</label>
+          <select id="bp-sev">
+            <option value="">-- Select --</option>
+            <option value="mild">mild</option>
+            <option value="moderate">moderate</option>
+            <option value="severe without psychotic features">severe without psychotic features</option>
+            <option value="severe with psychotic features">severe with psychotic features</option>
+          </select>
+          <div class="help">* hypomanic에는 psychotic features가 적용되지 않습니다.</div>
+          <label style="margin-top:12px;">Specifier(s) <span class="pill">multi‑select</span></label>
+          <div>
+            <label><input type="checkbox" class="bp-spec" value="with anxious distress" id="bp-spec-anx"> with anxious distress</label>
+            <select id="bp-anx-level" style="margin-left:10px;">
+              <option value="">(unspecified)</option>
+              <option value="(mild)">mild</option>
+              <option value="(moderate)">moderate</option>
+              <option value="(moderate-severe)">moderate-severe</option>
+              <option value="(severe)">severe</option>
+            </select>
+            <label><input type="checkbox" class="bp-spec" value="with mixed features"> with mixed features</label>
+            <label><input type="checkbox" class="bp-spec" value="with rapid cycling"> with rapid cycling</label>
+            <label><input type="checkbox" class="bp-spec" value="with peripartum onset"> with peripartum onset</label>
+            <label><input type="checkbox" class="bp-spec" value="with seasonal pattern"> with seasonal pattern</label>
+          </div>
+          <label style="margin-top:12px;">Remission status</label>
+          <select id="bp-rem">
+            <option value="">-- None --</option>
+            <option value="in partial remission">in partial remission</option>
+            <option value="in full remission">in full remission</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="result-card"><div class="help">Generated diagnosis</div><div id="bp-result" class="result" style="margin-top:6px;">(선택값을 입력하세요)</div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>현재 탭 결과를 복사하려면 <span class="kbd">Copy current</span> 를 누르세요. 초기화는 <span class="kbd">Reset current</span>.</span>
+  </footer>
+
+  <script>
+    // Tab switching
+    const tabs = Array.from(document.querySelectorAll('.tabbtn'));
+    const wraps = {
+      mdd: document.getElementById('wrap-mdd'),
+      scz: document.getElementById('wrap-scz'),
+      gad: document.getElementById('wrap-gad'),
+      panic: document.getElementById('wrap-panic'),
+      bipolar: document.getElementById('wrap-bipolar'),
+    };
+    let current = 'mdd';
+    tabs.forEach(btn => btn.addEventListener('click', () => {
+      tabs.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.values(wraps).forEach(w => w.classList.remove('active'));
+      current = btn.dataset.tab;
+      wraps[current].classList.add('active');
+      buildAll();
+    }));
+
+    // ===== MDD (Pro) logic =====
+    const mddEl = {
+      disorder: document.getElementById('mdd-disorder'),
+      episode: document.getElementById('mdd-episode'),
+      severity: document.getElementById('mdd-severity'),
+      remission: document.getElementById('mdd-remission'),
+      result: document.getElementById('mdd-result'),
+      anx: document.getElementById('mdd-spec-anx'),
+      anxWrap: document.getElementById('mdd-anx-wrap'),
+      anxLevel: document.getElementById('mdd-anx-level'),
+      season: document.getElementById('mdd-spec-season'),
+      specBoxes: Array.from(document.querySelectorAll('.mdd-spec'))
+    };
+    function mddUpdateSeason() {
+      if (mddEl.episode.value !== 'recurrent') {
+        mddEl.season.checked = false;
+        mddEl.season.disabled = true;
+      } else mddEl.season.disabled = false;
+    }
+    function mddBuild() {
+      mddUpdateSeason();
+      const parts = [mddEl.disorder.value.trim()];
+      if (mddEl.episode.value) parts.push(mddEl.episode.value);
+      if (mddEl.severity.value) parts.push(mddEl.severity.value);
+
+      const specs = [];
+      mddEl.specBoxes.forEach(cb => {
+        if (cb.checked) {
+          if (cb.value === 'with anxious distress') {
+            const lvl = mddEl.anxLevel.value || '';
+            specs.push(lvl ? cb.value + ' ' + lvl : cb.value);
+          } else specs.push(cb.value);
+        }
+      });
+      if (specs.length) parts.push(...specs);
+      if (mddEl.remission.value) parts.push(mddEl.remission.value);
+      mddEl.result.textContent = parts.join(', ') || '(선택값을 입력하세요)';
+    }
+    [mddEl.episode, mddEl.severity, mddEl.remission].forEach(el => el.addEventListener('change', mddBuild));
+    mddEl.specBoxes.forEach(cb => cb.addEventListener('change', () => {
+      if (cb === mddEl.anx) mddEl.anxWrap.style.display = mddEl.anx.checked ? 'block' : 'none';
+      mddBuild();
+    }));
+    mddEl.anxLevel.addEventListener('change', mddBuild);
+
+    // ===== Schizophrenia logic =====
+    const sczEl = {
+      dis: document.getElementById('scz-dis'),
+      course: document.getElementById('scz-course'),
+      status: document.getElementById('scz-status'),
+      cat: document.getElementById('scz-cat'),
+      sev: document.getElementById('scz-sev'),
+      result: document.getElementById('scz-result')
+    };
+    function sczValidate() {
+      if (sczEl.course.value === 'continuous') {
+        sczEl.status.value = '';
+        sczEl.status.disabled = true;
+      } else sczEl.status.disabled = false;
+    }
+    function sczBuild() {
+      sczValidate();
+      const p = [sczEl.dis.value.trim()];
+      if (sczEl.course.value) p.push(sczEl.course.value);
+      if (sczEl.status.value) p.push(sczEl.status.value);
+      if (sczEl.cat.value) p.push(sczEl.cat.value);
+      if (sczEl.sev.value) p.push(sczEl.sev.value);
+      sczEl.result.textContent = p.join(', ') || '(선택값을 입력하세요)';
+    }
+    [sczEl.course, sczEl.status, sczEl.cat, sczEl.sev].forEach(el => el.addEventListener('change', sczBuild));
+
+    // ===== GAD logic =====
+    const gadEl = {
+      dis: document.getElementById('gad-dis'),
+      spec: document.getElementById('gad-spec'),
+      sev: document.getElementById('gad-sev'),
+      result: document.getElementById('gad-result')
+    };
+    function gadBuild() {
+      const p = [gadEl.dis.value.trim()];
+      if (gadEl.spec.value) p.push(gadEl.spec.value);
+      if (gadEl.sev.value) p.push(gadEl.sev.value);
+      gadEl.result.textContent = p.join(', ');
+    }
+    [gadEl.spec, gadEl.sev].forEach(el => el.addEventListener('change', gadBuild));
+
+    // ===== Panic logic =====
+    const panicEl = {
+      dis: document.getElementById('panic-dis'),
+      note: document.getElementById('panic-note'),
+      result: document.getElementById('panic-result')
+    };
+    function panicBuild() {
+      const p = [panicEl.dis.value.trim()];
+      const n = (panicEl.note.value || '').trim();
+      if (n) p.push(n);
+      panicEl.result.textContent = p.join(', ');
+    }
+    panicEl.note.addEventListener('input', panicBuild);
+
+    // ===== Bipolar logic =====
+    const bpEl = {
+      type: document.getElementById('bp-type'),
+      epi: document.getElementById('bp-epi'),
+      sev: document.getElementById('bp-sev'),
+      rem: document.getElementById('bp-rem'),
+      specs: Array.from(document.querySelectorAll('.bp-spec')),
+      anxBox: document.getElementById('bp-spec-anx'),
+      anxLevel: document.getElementById('bp-anx-level'),
+      result: document.getElementById('bp-result')
+    };
+    function bpEnforce() {
+      if (bpEl.epi.value === 'hypomanic' && bpEl.sev.value.includes('psychotic features')) {
+        bpEl.sev.value = '';
+      }
+    }
+    function bpBuild() {
+      bpEnforce();
+      const p = [];
+      if (bpEl.type.value) p.push(bpEl.type.value);
+      if (bpEl.epi.value) p.push(`current/most recent episode ${bpEl.epi.value}`);
+      if (bpEl.sev.value) p.push(bpEl.sev.value);
+      const specs = [];
+      bpEl.specs.forEach(cb => {
+        if (cb.checked) {
+          if (cb.value === 'with anxious distress') {
+            const lvl = bpEl.anxLevel.value || '';
+            specs.push(lvl ? cb.value + ' ' + lvl : cb.value);
+          } else specs.push(cb.value);
+        }
+      });
+      if (specs.length) p.push(...specs);
+      if (bpEl.rem.value) p.push(bpEl.rem.value);
+      bpEl.result.textContent = p.join(', ') || '(선택값을 입력하세요)';
+    }
+    [bpEl.type, bpEl.epi, bpEl.sev, bpEl.rem].forEach(el => el.addEventListener('change', bpBuild));
+    bpEl.specs.forEach(cb => cb.addEventListener('change', bpBuild));
+    bpEl.anxLevel.addEventListener('change', () => { if (!bpEl.anxBox.checked && bpEl.anxLevel.value) bpEl.anxBox.checked = true; bpBuild(); });
+
+    // Global buttons
+    document.getElementById('copyCurrent').addEventListener('click', () => {
+      const text = {
+        mdd: mddEl.result.textContent,
+        scz: sczEl.result.textContent,
+        gad: gadEl.result.textContent,
+        panic: panicEl.result.textContent,
+        bipolar: bpEl.result.textContent
+      }[current] || '';
+      if (text && text !== '(선택값을 입력하세요)') {
+        navigator.clipboard.writeText(text);
+        const btn = document.getElementById('copyCurrent');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy current', 1200);
+      }
+    });
+    document.getElementById('resetCurrent').addEventListener('click', () => {
+      if (current === 'mdd') {
+        mddEl.episode.value = ''; mddEl.severity.value = ''; mddEl.remission.value = '';
+        mddEl.specBoxes.forEach(cb => cb.checked = false); mddEl.anxLevel.value = ''; mddEl.anxWrap.style.display = 'none';
+      } else if (current === 'scz') {
+        sczEl.course.value = ''; sczEl.status.value = ''; sczEl.cat.value = ''; sczEl.sev.value = '';
+      } else if (current === 'gad') {
+        gadEl.spec.value = ''; gadEl.sev.value = '';
+      } else if (current === 'panic') {
+        panicEl.note.value = '';
+      } else if (current === 'bipolar') {
+        bpEl.type.value = ''; bpEl.epi.value = ''; bpEl.sev.value = ''; bpEl.rem.value='';
+        bpEl.specs.forEach(cb => cb.checked = false); bpEl.anxLevel.value = '';
+      }
+      buildAll();
+    });
+
+    function buildAll() { mddBuild(); sczBuild(); gadBuild(); panicBuild(); bpBuild(); }
+    // init
+    buildAll();
+  </script>
+</body>
+</html>
